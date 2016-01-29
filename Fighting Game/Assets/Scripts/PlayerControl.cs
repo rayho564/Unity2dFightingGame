@@ -39,6 +39,7 @@ public class PlayerControl : MonoBehaviour {
 
     //Fixed Update because we are using their physics
     void FixedUpdate() {
+        
         //Reason why we do this is if we want to have more than 2 players it's easier for the future
         horizontal = Input.GetAxis("Horizontal" + PlayerNumber.ToString());
         vertical = Input.GetAxis("Vertical" + PlayerNumber.ToString());
@@ -73,7 +74,13 @@ public class PlayerControl : MonoBehaviour {
         }
 
         if (!crouch)
-            rig2d.AddForce(movement * maxSpeed);
+        {
+
+            if (Mathf.Abs(horizontal) < maxSpeed)
+            {
+                rig2d.AddForce(movement * maxSpeed);
+            }
+        }
         else
             rig2d.velocity = Vector3.zero; // No sprites so we will not allow movement for now **Change if adding features
 	}
@@ -89,11 +96,15 @@ public class PlayerControl : MonoBehaviour {
     }
 
     //Enter collision with ground - on ground
-    void OnCollisionEnter2d(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
-        if(col.collider.tag == "Ground")
+        
+        if (col.collider.tag == "Ground")
         {
             onGround = true;
+
+            //Change later
+            rig2d.velocity = new Vector3(.1f, 0, 0 );
 
             jumpKey = false;
             jmpDuration = 0;
@@ -103,7 +114,7 @@ public class PlayerControl : MonoBehaviour {
     }
 
     //Exit collision with ground - air
-    void OnCollisionExit2d(Collision2D col)
+    void OnCollisionExit2D(Collision2D col)
     {
         if (col.collider.tag == "Ground")
         {
