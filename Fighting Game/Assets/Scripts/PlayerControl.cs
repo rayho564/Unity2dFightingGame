@@ -24,16 +24,35 @@ public class PlayerControl : MonoBehaviour {
     bool onGround;
     bool crouch;
 
+    public float attackRate = 0.3f;
+    bool[] attack = new bool[2]; //Array so we can add new attacks later
+    float[] attackTimer = new float[2];
+    int[] timesPressed = new int[2];
+
     // Use this for initialization
     void Start () {
 
         rig2d = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
 
+        jmpForce = JumpForce;
+
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach( GameObject pl in players)
+        {
+            if(pl.transform != this.transform)
+            {
+                enemy = pl.transform;
+            }
+        }
 	}
 
     void Update()
     {
+        AttackInput();
+        //ScaleCheck();
+        OnGroundCheck();
         UpdateAnimator();
     }
 
@@ -73,6 +92,9 @@ public class PlayerControl : MonoBehaviour {
             falling = true;
         }
 
+        if( (attack[0] && !jumpKey) || (attack[1] && !jumpKey))
+            movement = Vector3.zero;
+
         if (!crouch)
         {
 
@@ -81,11 +103,67 @@ public class PlayerControl : MonoBehaviour {
                 rig2d.AddForce(movement * maxSpeed);
             }
         }
-        else
+        else if(crouch && onGround)
             rig2d.velocity = Vector3.zero; // No sprites so we will not allow movement for now **Change if adding features
 	}
 
-    
+    void ScaleCheck()
+    {
+        if(transform.position.x < enemy.position.x)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = Vector3.one;
+        }
+    }
+
+    void AttackInput()
+    {
+        if (Input.GetButtonDown("Attack1" + PlayerNumber.ToString()))
+        {
+            attack[0] = true;
+            attackTimer[0] = 0;
+            timesPressed[0]++;
+        }
+        if(attack[0])
+        {
+            attackTimer[0] += Time.deltaTime;
+
+            if(attackTimer[0] > attackRate || timesPressed[0] >= 4)
+            {
+                attackTimer[0] = 0;
+                attack[0] = false;
+                timesPressed[0] = 0;
+            }
+        }
+        if (Input.GetButtonDown("Attack2" + PlayerNumber.ToString()))
+        {
+            attack[1] = true;
+            attackTimer[1] = 0;
+            timesPressed[1]++;
+        }
+        if (attack[1])
+        {
+            attackTimer[1] += Time.deltaTime;
+
+            if (attackTimer[1] > attackRate || timesPressed[1] >= 4)
+            {
+                attackTimer[1] = 0;
+                attack[1] = false;
+                timesPressed[1] = 0;
+            }
+        }
+    }
+
+    void OnGroundCheck()
+    {
+        if (!onGround)
+            rig2d.gravityScale = 3;
+        else
+            rig2d.gravityScale = 1;
+    }
 
     void UpdateAnimator()
     {
@@ -93,6 +171,8 @@ public class PlayerControl : MonoBehaviour {
         anim.SetBool("OnGround", this.onGround);
         anim.SetBool("Falling", this.falling);
         anim.SetFloat("Movement", Mathf.Abs(horizontal));
+        anim.SetBool("Attack1", this.attack[0]);
+        anim.SetBool("Attack2", this.attack[1]);
     }
 
     //Enter collision with ground - on ground
