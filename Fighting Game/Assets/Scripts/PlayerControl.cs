@@ -29,6 +29,12 @@ public class PlayerControl : MonoBehaviour {
     float[] attackTimer = new float[2];
     int[] timesPressed = new int[2];
 
+    public bool damage;
+    public float invincibility = 1; //time it doesn't take damage after hurt
+    float invincibilityTimer;
+
+    public float health;
+
     // Use this for initialization
     void Start () {
 
@@ -51,8 +57,9 @@ public class PlayerControl : MonoBehaviour {
     void Update()
     {
         AttackInput();
-        //ScaleCheck();
+        ScaleCheck();
         OnGroundCheck();
+        Damage();
         UpdateAnimator();
     }
 
@@ -155,6 +162,27 @@ public class PlayerControl : MonoBehaviour {
                 timesPressed[1] = 0;
             }
         }
+    }
+
+    void Damage()
+    {
+        if (damage)
+        {
+            /*health -= 10;
+            if(health <= 0)
+            {
+
+            }*/
+            invincibilityTimer += Time.deltaTime;
+
+            if(invincibilityTimer > invincibility )
+            {
+                damage = false;
+                invincibilityTimer = 0;
+            }
+        }
+
+        //ADD HEALTH MANIPULATION HERE -- CREATE NEW BOOL FOR HEALTH
     }
 
     void OnGroundCheck()
