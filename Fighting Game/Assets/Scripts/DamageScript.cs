@@ -14,7 +14,8 @@ public class DamageScript : MonoBehaviour {
 
                 col.transform.root.GetComponentInChildren<Animator>().SetTrigger("Damage");
 
-                //add how much damage over here
+                col.transform.GetComponent<PlayerControl>().health -= 10;
+               
             }
         }
     }

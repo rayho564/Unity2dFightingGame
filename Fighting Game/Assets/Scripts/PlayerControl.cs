@@ -65,6 +65,7 @@ public class PlayerControl : MonoBehaviour {
         Damage();
         SpecialAttack();
         UpdateAnimator();
+        WinCheck();
     }
 
     //Fixed Update because we are using their physics
@@ -117,6 +118,12 @@ public class PlayerControl : MonoBehaviour {
         else if(crouch && onGround)
             rig2d.velocity = Vector3.zero; // No sprites so we will not allow movement for now **Change if adding features
 	}
+
+    void WinCheck()
+    {
+        if (enemy.GetComponent<PlayerControl>().health < 0)
+            Application.LoadLevel("WinScreen");
+    }
 
     void ScaleCheck()
     {
@@ -172,11 +179,7 @@ public class PlayerControl : MonoBehaviour {
     {
         if (damage)
         {
-            /*health -= 10;
-            if(health <= 0)
-            {
 
-            }*/
             invincibilityTimer += Time.deltaTime;
 
             if(invincibilityTimer > invincibility )
@@ -186,7 +189,6 @@ public class PlayerControl : MonoBehaviour {
             }
         }
 
-        //ADD HEALTH MANIPULATION HERE -- CREATE NEW BOOL FOR HEALTH
     }
 
     void SpecialAttack()
