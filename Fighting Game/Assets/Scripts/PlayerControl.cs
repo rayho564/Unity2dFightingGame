@@ -33,6 +33,9 @@ public class PlayerControl : MonoBehaviour {
     public float invincibility = 1; //time it doesn't take damage after hurt
     float invincibilityTimer;
 
+    public bool specialAttack;
+    public GameObject projectile;
+
     public float health;
 
     // Use this for initialization
@@ -60,6 +63,7 @@ public class PlayerControl : MonoBehaviour {
         ScaleCheck();
         OnGroundCheck();
         Damage();
+        SpecialAttack();
         UpdateAnimator();
     }
 
@@ -183,6 +187,22 @@ public class PlayerControl : MonoBehaviour {
         }
 
         //ADD HEALTH MANIPULATION HERE -- CREATE NEW BOOL FOR HEALTH
+    }
+
+    void SpecialAttack()
+    {
+        if(specialAttack)
+        {
+            Vector3 pos = transform.position + new Vector3((enemy.position.x - transform.position.x)/2, 0, 0);
+            GameObject pr = Instantiate(projectile, pos, Quaternion.identity) as GameObject;
+            Vector3 nrDir = new Vector3(enemy.position.x, transform.position.y, 0);
+            Vector3 dir = nrDir - transform.position;
+            pr.GetComponent<Rigidbody2D>().AddForce(dir * 10, ForceMode2D.Impulse);
+
+            specialAttack = false;
+            Destroy(pr, 2);
+        }
+
     }
 
     void OnGroundCheck()
