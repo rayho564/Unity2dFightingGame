@@ -195,11 +195,25 @@ public class PlayerControl : MonoBehaviour {
     {
         if(specialAttack)
         {
-            Vector3 pos = transform.position + new Vector3((enemy.position.x - transform.position.x)/2, 0, 0);
+            Vector3 pos;
+            if (enemy.position.x - transform.position.x > 0)
+            {
+                pos = transform.position + new Vector3(1, 0, 0);
+            }
+            else
+            {
+                pos = transform.position + new Vector3(-2, 0, 0);
+            }
+            
             GameObject pr = Instantiate(projectile, pos, Quaternion.identity) as GameObject;
             Vector3 nrDir = new Vector3(enemy.position.x, transform.position.y, 0);
             Vector3 dir = nrDir - transform.position;
-            pr.GetComponent<Rigidbody2D>().AddForce(dir * 10, ForceMode2D.Impulse);
+            if (transform.position.x > enemy.position.x)
+            {
+                pr.transform.localScale = new Vector3(-1, 1, 1);
+            }
+
+            pr.GetComponent<Rigidbody2D>().AddForce(dir * 3, ForceMode2D.Impulse);
 
             specialAttack = false;
             Destroy(pr, 2);
@@ -225,10 +239,18 @@ public class PlayerControl : MonoBehaviour {
         anim.SetBool("Attack2", this.attack[1]);
     }
 
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.tag == "Projectile")
+        {
+            Destroy(col.gameObject);
+        }
+    }
+
     //Enter collision with ground - on ground
     void OnCollisionEnter2D(Collision2D col)
     {
-        
+
         if (col.collider.tag == "Ground")
         {
             onGround = true;
@@ -251,4 +273,5 @@ public class PlayerControl : MonoBehaviour {
             onGround = false;
         }
     }
+
 }

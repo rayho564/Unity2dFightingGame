@@ -10,11 +10,13 @@ public class DamageScript : MonoBehaviour {
             //Can add function of all player attacks so player doesn't take damage when attacking
             if (!col.transform.GetComponent<PlayerControl>().damage)
             {
+
                 col.transform.GetComponent<PlayerControl>().damage = true;
 
                 col.transform.root.GetComponentInChildren<Animator>().SetTrigger("Damage");
 
                 col.transform.GetComponent<PlayerControl>().health -= 10;
+
                
             }
         }
